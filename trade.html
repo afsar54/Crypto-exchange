@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CryptoX Trading Terminal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0e11;
+      color: #eaecef;
+    }
+    nav {
+      background-color: #1e2329;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fcd535;
+    }
+    nav a {
+      color: #eaecef;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    nav a:hover {
+      color: #fcd535;
+    }
+    .terminal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+    .sidebar, .chart, .order-book, .trade-panel {
+      background-color: #1e2329;
+      border-radius: 6px;
+      padding: 15px;
+    }
+    .sidebar {
+      flex: 1 1 180px;
+      min-width: 180px;
+    }
+    .sidebar h3, .order-book h3, .trade-panel h3 {
+      color: #fcd535;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar li {
+      padding: 10px;
+      border-bottom: 1px solid #2b3139;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .sidebar li:hover, .sidebar li.active {
+      background-color: #2b3139;
+    }
+    .chart {
+      flex: 3 1 400px;
+      min-width: 300px;
+      height: 400px;
+    }
+    .order-book {
+      flex: 1 1 250px;
+      min-width: 250px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #eaecef;
+    }
+    thead th {
+      color: #fcd535;
+      text-align: right;
+      padding: 6px 4px;
+      border-bottom: 1px solid #2b3139;
+    }
+    tbody td {
+      padding: 4px 6px;
+      text-align: right;
+      border-bottom: 1px solid #2b3139;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+    .green {
+      color: #4caf50;
+    }
+    .red {
+      color: #f44336;
+    }
+    .trade-panel {
+      flex: 1 1 250px;
+      min-width: 250px;
+      display: flex;
+      flex-direction: column;
+    }
+    .trade-panel input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background-color: #0b0e11;
+      color: #eaecef;
+      font-size: 14px;
+    }
+    .trade-panel button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 10px;
+      transition: background-color 0.2s;
+    }
+    .trade-panel .buy-btn {
+      background-color: #4caf50;
+      color: white;
+    }
+    .trade-panel .buy-btn:hover {
+      background-color: #43a047;
+    }
+    .trade-panel .sell-btn {
+      background-color: #f44336;
+      color: white;
+    }
+    .trade-panel .sell-btn:hover {
+      background-color: #e53935;
+    }
+    @media (max-width: 900px) {
+      .terminal {
+        flex-direction: column;
+      }
+      .chart, .order-book, .trade-panel, .sidebar {
+        min-width: 100% !important;
+        flex: 1 1 100% !important;
+      }
+      .chart {
+        height: 300px;
+      }
+      .order-book {
+        max-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">CryptoX</div>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="trade.html" style="color:#fcd535;">Trade</a>
+    </div>
+  </nav>
+
+  <main class="terminal">
+    <section class="sidebar">
+      <h3>Markets</h3>
+      <ul id="marketList">
+        <li class="active" data-symbol="btcusdt">BTC/USDT</li>
+        <li data-symbol="ethusdt">ETH/USDT</li>
+        <li data-symbol="bnbusdt">BNB/USDT</li>
+      </ul>
+    </section>
+
+    <section class="chart" id="tv_chart"></section>
+
+    <section class="order-book">
+      <h3>Order Book</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Price (USDT)</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody id="orderBookBody">
+          <tr><td colspan="2" style="text-align:center; color:#888;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="trade-panel">
+      <h3>Trade</h3>
+      <input type="number" id="tradeAmount" placeholder="Amount (e.g. 0.01)" min="0" step="any" />
+      <input type="number" id="tradePrice" placeholder="Price (USDT)" min="0" step="any" />
+      <button class="buy-btn" id="buyBtn">Place Buy Order</button>
+      <button class="sell-btn" id="sellBtn">Place Sell Order</button>
+    </section>
+  </main>
+
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  <script>
+    const marketList = document.getElementById('marketList');
+    const orderBookBody = document.getElementById('orderBookBody');
+    let currentSymbol = 'btcusdt';
+    let ws = null;
+    let tradingViewWidget = null;
+
+    function initTradingView(symbol) {
+      if(tradingViewWidget) {
+        tradingViewWidget.remove();
+      }
+      tradingViewWidget = new TradingView.widget({
+        container_id: "tv_chart",
+        width: "100%",
+        height: 400,
+        symbol: 'BINANCE:' + symbol.toUpperCase(),
+        interval: "15",
+        timezone: "Etc/UTC",
+        theme: "dark",
+        style: 1,
+        locale: "en",
+        toolbar_bg: "#1e2329",
+        enable_publishing: false,
+        hide_top_toolbar: false,
+        hide_legend: false,
+        save_image: false,
+        studies: [],
+        allow_symbol_change: false
+      });
+    }
+
+    function connectOrderBook(symbol) {
+      if (ws) {
+        ws.close();
+      }
+      orderBookBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:#888;">Loading...</td></tr>`;
+
+      ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@depth20@100ms`);
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const bids = data.b.slice(0, 10);
+        const asks = data.a.slice(0, 10).reverse();
+
+        let rows = '';
+
+        // Show asks in red on top (higher prices)
+        asks.forEach(([price, qty]) => {
+          rows += `<tr><td class="red">${parseFloat(price).toFixed(2)}</td><td>${parseFloat(qty)}</td></tr>`;
+        });
+
+        // Show bids in green below (lower prices)
+        bids.forEach(([price, qty]) => {
+          rows += `<tr><td class="green">${parseFloat(price).toFixed(2)}</td><td>${parseFloat(qty)}</td></tr>`;
+        });
+
+        orderBookBody.innerHTML = rows;
+      };
+
+      ws.onerror = () => {
+        orderBookBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:#f44336;">Connection error</td></tr>`;
+      };
+
+      ws.onclose = () => {
+        orderBookBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:#f44336;">Connection closed</td></tr>`;
+      };
+    }
+
+    function setActiveMarket(symbol) {
+      [...marketList.children].forEach(li => {
+        li.classList.toggle('active', li.dataset.symbol === symbol);
+      });
+    }
+
+    marketList.addEventListener('click', (e) => {
+      if(e.target.tagName === 'LI') {
+        const newSymbol = e.target.dataset.symbol;
+        if(newSymbol !== currentSymbol) {
+          currentSymbol = newSymbol;
+          setActiveMarket(currentSymbol);
+          initTradingView(currentSymbol);
+          connectOrderBook(currentSymbol);
+        }
+      }
+    });
+
+    // Initialize on page load
+    window.addEventListener('load', () => {
+      initTradingView(currentSymbol);
+      connectOrderBook(currentSymbol);
+    });
+
+    // Simple handlers for buy/sell buttons (currently just alerts)
+    document.getElementById('buyBtn').addEventListener('click', () => {
+      const amount = parseFloat(document.getElementById('tradeAmount').value);
+      const price = parseFloat(document.getElementById('tradePrice').value);
+      if (!amount || !price || amount <= 0 || price <= 0) {
+        alert('Please enter valid amount and price.');
+        return;
+      }
+      alert(`Buy order placed:\n${amount} ${currentSymbol.slice(0, -4).toUpperCase()} @ ${price} USDT`);
+    });
+
+    document.getElementById('sellBtn').addEventListener('click', () => {
+      const amount = parseFloat(document.getElementById('tradeAmount').value);
+      const price = parseFloat(document.getElementById('tradePrice').value);
+      if (!amount || !price || amount <= 0 || price <= 0) {
+        alert('Please enter valid amount and price.');
+        return;
+      }
+      alert(`Sell order placed:\n${amount} ${currentSymbol.slice(0, -4).toUpperCase()} @ ${price} USDT`);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+/* style.css */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: url('images/bitcoin-bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #eaecef;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 40px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fcd535;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="text"],
+input[type="password"] {
+  padding: 12px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+button {
+  padding: 12px;
+  background-color: #fcd535;
+  border: none;
+  color: #111;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #e6bb28;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #ccc;
+}
+body {
+  background: url('images/bitcoin-bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
